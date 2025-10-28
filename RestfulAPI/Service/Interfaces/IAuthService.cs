@@ -1,9 +1,13 @@
 ﻿using RestfulAPI.Modal;
+using RestfulAPI.Repos.Models;
 
 namespace RestfulAPI.Service.Interfaces
 {
     public interface IAuthService
     {
-        Task<bool> RegisterUser(LoginModal user);
+        //Task<string> GenerateTokenString(User user);
+        Task<bool> LoginWithCookie(LoginModal user);
+        Task<bool> RegisterUser(RegisterModal user);
+        Task Logout();
     }
 }

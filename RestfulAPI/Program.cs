@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -30,12 +32,27 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 builder.Services.AddControllers();
+builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.DocInclusionPredicate((docName, apiDesc) =>
+    {
+        var controllerActionDescriptor = apiDesc.ActionDescriptor as Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor;
+        return controllerActionDescriptor?.ControllerTypeInfo
+            .GetCustomAttributes(typeof(ApiControllerAttribute), true)
+            .Any() ?? false;
+    });
+});
+
 
 // Transient
-builder.Services.AddTransient<ICustomerService, CustomerService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddTransient<IRefreshHandlerService, RefreshHandlerService>();
+builder.Services.AddScoped<Sieve.Services.ISieveProcessor, Sieve.Services.SieveProcessor>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<ITracksService, TracksService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddDbContext<LearndataContext>(o =>
     o.UseSqlServer(builder.Configuration.GetConnectionString("apicon"))
@@ -43,11 +60,7 @@ builder.Services.AddDbContext<LearndataContext>(o =>
 
 builder.Services.AddAutoMapper(typeof(AutoMapperHandler));
 
-builder.Services.AddCors(p => p.AddPolicy("Corspolicy", build =>
-{
-    build.WithOrigins("https://domain1.com", "https://domain2.com").AllowAnyMethod().AllowAnyHeader();
-}));
-
+// Rate limiter
 builder.Services.AddRateLimiter(_ => _.AddFixedWindowLimiter(policyName: "Fixedwindow", options =>
 {
     options.Window = TimeSpan.FromSeconds(10);
@@ -63,48 +76,59 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 
 }).AddEntityFrameworkStores<LearndataContext>().AddDefaultTokenProviders();
 
-// JWT Authentication
-var _authkey = builder.Configuration.GetValue<string>("JwtSettings:SecurityKey");
-builder.Services.AddAuthentication(item =>
+// Cookie settings
+builder.Services.ConfigureApplicationCookie(options =>
 {
-    item.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    item.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(item =>
-{
-    item.RequireHttpsMetadata = true;
-    item.SaveToken = true;
-    item.TokenValidationParameters = new TokenValidationParameters()
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.Name = ".AspNetCore.Identity.Application";
+});
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
     {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authkey)),
-        ValidateIssuer = false,
-        ValidateAudience = false,
-        ClockSkew = TimeSpan.Zero
-    };
+        options.LoginPath = "/mvcauth/login";
+        options.LogoutPath = "/";
+    });
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Corspolicy", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
 });
 
 var app = builder.Build();
 
-// Cấu hình pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseCors("Corspolicy");
-
-app.UseRateLimiter();
-
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseCors("Corspolicy");
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
-// 🟢 Ghi log thử để kiểm tra
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
 Log.Information("Application started successfully!");
 
 app.Run();
 
-// 🟢 Đảm bảo flush log khi app tắt
 Log.CloseAndFlush();

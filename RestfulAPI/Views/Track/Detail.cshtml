@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "User";
+    Layout = "_Layout";
+}
+@model RestfulAPI.Modal.TracksModal
+
+<div class="track-detail">
+    <h1>@Model.Title</h1>
+
+    <img src="@Model.TrackImageUrl" alt="@Model.Title" style="width: 200px; border-radius: 10px;" />
+
+    <p><strong>Ca sĩ:</strong> @string.Join(", ", Model.Artists.Select(a => a.ArtistName))</p>
+    <p><strong>Thể loại:</strong> @string.Join(", ", Model.Genres.Select(g => g.GenreName))</p>
+    <p><strong>Album:</strong> @Model.AlbumTitle</p>
+    <p><strong>Thời lượng:</strong> @(Model.DurationSeconds / 60)m @(Model.DurationSeconds % 60)s</p>
+
+    @if (!string.IsNullOrEmpty(Model.FileUrl))
+    {
+        <audio controls style="margin-top: 10px; width: 100%;">
+            <source src="@Model.FileUrl" type="audio/mpeg" />
+            Trình duyệt của bạn không hỗ trợ phát nhạc.
+        </audio>
+    }
+</div>

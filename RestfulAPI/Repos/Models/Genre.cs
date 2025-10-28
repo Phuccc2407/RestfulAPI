@@ -15,7 +15,5 @@ public partial class Genre
     [StringLength(100)]
     public string Name { get; set; } = null!;
 
-    [ForeignKey("GenreId")]
-    [InverseProperty("Genres")]
-    public virtual ICollection<Track> Tracks { get; set; } = new List<Track>();
+    public virtual ICollection<TrackGenre> TrackGenres { get; set; } = new List<TrackGenre>();
 }

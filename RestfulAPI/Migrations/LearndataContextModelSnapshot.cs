@@ -22,11 +22,10 @@ namespace RestfulAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -50,7 +49,7 @@ namespace RestfulAPI.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -64,8 +63,9 @@ namespace RestfulAPI.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -74,7 +74,7 @@ namespace RestfulAPI.Migrations
                     b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -88,8 +88,9 @@ namespace RestfulAPI.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -98,7 +99,7 @@ namespace RestfulAPI.Migrations
                     b.ToTable("AspNetUserClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -109,8 +110,9 @@ namespace RestfulAPI.Migrations
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -119,13 +121,13 @@ namespace RestfulAPI.Migrations
                     b.ToTable("AspNetUserLogins", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -134,10 +136,10 @@ namespace RestfulAPI.Migrations
                     b.ToTable("AspNetUserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -155,13 +157,14 @@ namespace RestfulAPI.Migrations
 
             modelBuilder.Entity("RestfulAPI.Repos.Models.Album", b =>
                 {
-                    b.Property<Guid>("AlbumId")
+                    b.Property<string>("AlbumId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("nvarchar(450)")
                         .HasDefaultValueSql("(newid())");
 
-                    b.Property<Guid>("ArtistId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("ArtistId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CoverUrl")
                         .HasMaxLength(2000)
@@ -195,10 +198,15 @@ namespace RestfulAPI.Migrations
 
             modelBuilder.Entity("RestfulAPI.Repos.Models.Artist", b =>
                 {
-                    b.Property<Guid>("ArtistId")
+                    b.Property<string>("ArtistId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("nvarchar(450)")
                         .HasDefaultValueSql("(newid())");
+
+                    b.Property<string>("ArtistImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<string>("ArtistName")
                         .IsRequired()
@@ -213,8 +221,8 @@ namespace RestfulAPI.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("(sysutcdatetime())");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("ArtistId")
                         .HasName("PK__Artists__25706B50ADD40E33");
@@ -252,8 +260,8 @@ namespace RestfulAPI.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("(sysutcdatetime())");
 
-                    b.Property<Guid?>("PerformedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("PerformedBy")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("AuditId")
                         .HasName("PK__AuditLog__A17F2398F5B3673B");
@@ -261,6 +269,25 @@ namespace RestfulAPI.Migrations
                     b.HasIndex("PerformedBy");
 
                     b.ToTable("AuditLogs");
+                });
+
+            modelBuilder.Entity("RestfulAPI.Repos.Models.Category", b =>
+                {
+                    b.Property<int>("CategoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("CategoryId")
+                        .HasName("PK__Genres__0385057E0B602F56");
+
+                    b.ToTable("Category");
                 });
 
             modelBuilder.Entity("RestfulAPI.Repos.Models.Follow", b =>
@@ -276,14 +303,15 @@ namespace RestfulAPI.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("(sysutcdatetime())");
 
-                    b.Property<Guid?>("FolloweeArtistId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("FolloweeArtistId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid?>("FolloweeUserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("FolloweeUserId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid>("FollowerId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("FollowerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("FollowId")
                         .HasName("PK__Follows__2CE810AE40DC9507");
@@ -370,8 +398,9 @@ namespace RestfulAPI.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("PaymentId")
                         .HasName("PK__Payments__9B556A38727CDAFC");
@@ -383,9 +412,9 @@ namespace RestfulAPI.Migrations
 
             modelBuilder.Entity("RestfulAPI.Repos.Models.Playlist", b =>
                 {
-                    b.Property<Guid>("PlaylistId")
+                    b.Property<string>("PlaylistId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("nvarchar(450)")
                         .HasDefaultValueSql("(newid())");
 
                     b.Property<DateTime?>("CreatedAt")
@@ -398,8 +427,9 @@ namespace RestfulAPI.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<Guid>("OwnerUserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("OwnerUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -427,14 +457,16 @@ namespace RestfulAPI.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("(sysutcdatetime())");
 
-                    b.Property<Guid>("PlaylistId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("PlaylistId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Position")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("TrackId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("TrackId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("PlaylistItemId")
                         .HasName("PK__Playlist__1910CEADF01446AF");
@@ -452,6 +484,9 @@ namespace RestfulAPI.Migrations
                         .HasMaxLength(50)
                         .IsUnicode(false)
                         .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("RefreshToken1")
                         .IsUnicode(false)
@@ -492,11 +527,12 @@ namespace RestfulAPI.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("(sysutcdatetime())");
 
-                    b.Property<Guid>("TrackId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("TrackId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("StreamId")
                         .HasName("PK__StreamHi__07C87A929CDEFD37");
@@ -532,8 +568,9 @@ namespace RestfulAPI.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("SubscriptionId")
                         .HasName("PK__Subscrip__9A2B249D334785FF");
@@ -545,16 +582,13 @@ namespace RestfulAPI.Migrations
 
             modelBuilder.Entity("RestfulAPI.Repos.Models.Track", b =>
                 {
-                    b.Property<Guid>("TrackId")
+                    b.Property<string>("TrackId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("nvarchar(450)")
                         .HasDefaultValueSql("(newid())");
 
-                    b.Property<Guid?>("AlbumId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ArtistId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("AlbumId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int?>("Bitrate")
                         .HasColumnType("int");
@@ -582,23 +616,71 @@ namespace RestfulAPI.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
 
+                    b.Property<string>("TrackImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
                     b.HasKey("TrackId")
                         .HasName("PK__Tracks__7A74F8E05D1F6F84");
 
                     b.HasIndex("AlbumId");
 
+                    b.ToTable("Tracks");
+                });
+
+            modelBuilder.Entity("RestfulAPI.Repos.Models.TrackArtist", b =>
+                {
+                    b.Property<string>("TrackId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ArtistId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("TrackId", "ArtistId");
+
                     b.HasIndex("ArtistId");
 
-                    b.ToTable("Tracks");
+                    b.ToTable("TrackArtists", (string)null);
+                });
+
+            modelBuilder.Entity("RestfulAPI.Repos.Models.TrackCategory", b =>
+                {
+                    b.Property<string>("TrackId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("TrackId", "CategoryId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("TrackCategories", (string)null);
+                });
+
+            modelBuilder.Entity("RestfulAPI.Repos.Models.TrackGenre", b =>
+                {
+                    b.Property<string>("TrackId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("GenreId")
+                        .HasColumnType("int");
+
+                    b.HasKey("TrackId", "GenreId");
+
+                    b.HasIndex("GenreId");
+
+                    b.ToTable("TrackGenres", (string)null);
                 });
 
             modelBuilder.Entity("RestfulAPI.Repos.Models.TrackLike", b =>
                 {
-                    b.Property<Guid>("TrackId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("TrackId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("LikedAt")
                         .ValueGeneratedOnAdd()
@@ -615,12 +697,14 @@ namespace RestfulAPI.Migrations
 
             modelBuilder.Entity("RestfulAPI.Repos.Models.User", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<string>("AvatarUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -691,32 +775,16 @@ namespace RestfulAPI.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("TrackGenre", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.Property<Guid>("TrackId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("GenreId")
-                        .HasColumnType("int");
-
-                    b.HasKey("TrackId", "GenreId")
-                        .HasName("PK__TrackGen__8A4CA8B797FA578A");
-
-                    b.HasIndex("GenreId");
-
-                    b.ToTable("TrackGenres", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.HasOne("RestfulAPI.Repos.Models.User", null)
                         .WithMany()
@@ -725,7 +793,7 @@ namespace RestfulAPI.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.HasOne("RestfulAPI.Repos.Models.User", null)
                         .WithMany()
@@ -734,9 +802,9 @@ namespace RestfulAPI.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -749,7 +817,7 @@ namespace RestfulAPI.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.HasOne("RestfulAPI.Repos.Models.User", null)
                         .WithMany()
@@ -898,15 +966,58 @@ namespace RestfulAPI.Migrations
                         .HasForeignKey("AlbumId")
                         .HasConstraintName("FK__Tracks__AlbumId__6D0D32F4");
 
-                    b.HasOne("RestfulAPI.Repos.Models.Artist", "Artist")
-                        .WithMany("Tracks")
-                        .HasForeignKey("ArtistId")
-                        .IsRequired()
-                        .HasConstraintName("FK__Tracks__ArtistId__6E01572D");
-
                     b.Navigation("Album");
+                });
+
+            modelBuilder.Entity("RestfulAPI.Repos.Models.TrackArtist", b =>
+                {
+                    b.HasOne("RestfulAPI.Repos.Models.Artist", "Artist")
+                        .WithMany("TrackArtists")
+                        .HasForeignKey("ArtistId")
+                        .IsRequired();
+
+                    b.HasOne("RestfulAPI.Repos.Models.Track", "Track")
+                        .WithMany("TrackArtists")
+                        .HasForeignKey("TrackId")
+                        .IsRequired();
 
                     b.Navigation("Artist");
+
+                    b.Navigation("Track");
+                });
+
+            modelBuilder.Entity("RestfulAPI.Repos.Models.TrackCategory", b =>
+                {
+                    b.HasOne("RestfulAPI.Repos.Models.Category", "Category")
+                        .WithMany("TrackCategories")
+                        .HasForeignKey("CategoryId")
+                        .IsRequired();
+
+                    b.HasOne("RestfulAPI.Repos.Models.Track", "Track")
+                        .WithMany("TrackCategories")
+                        .HasForeignKey("TrackId")
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Track");
+                });
+
+            modelBuilder.Entity("RestfulAPI.Repos.Models.TrackGenre", b =>
+                {
+                    b.HasOne("RestfulAPI.Repos.Models.Genre", "Genre")
+                        .WithMany("TrackGenres")
+                        .HasForeignKey("GenreId")
+                        .IsRequired();
+
+                    b.HasOne("RestfulAPI.Repos.Models.Track", "Track")
+                        .WithMany("TrackGenres")
+                        .HasForeignKey("TrackId")
+                        .IsRequired();
+
+                    b.Navigation("Genre");
+
+                    b.Navigation("Track");
                 });
 
             modelBuilder.Entity("RestfulAPI.Repos.Models.TrackLike", b =>
@@ -928,21 +1039,6 @@ namespace RestfulAPI.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("TrackGenre", b =>
-                {
-                    b.HasOne("RestfulAPI.Repos.Models.Genre", null)
-                        .WithMany()
-                        .HasForeignKey("GenreId")
-                        .IsRequired()
-                        .HasConstraintName("FK__TrackGenr__Genre__71D1E811");
-
-                    b.HasOne("RestfulAPI.Repos.Models.Track", null)
-                        .WithMany()
-                        .HasForeignKey("TrackId")
-                        .IsRequired()
-                        .HasConstraintName("FK__TrackGenr__Track__70DDC3D8");
-                });
-
             modelBuilder.Entity("RestfulAPI.Repos.Models.Album", b =>
                 {
                     b.Navigation("Tracks");
@@ -954,7 +1050,17 @@ namespace RestfulAPI.Migrations
 
                     b.Navigation("Follows");
 
-                    b.Navigation("Tracks");
+                    b.Navigation("TrackArtists");
+                });
+
+            modelBuilder.Entity("RestfulAPI.Repos.Models.Category", b =>
+                {
+                    b.Navigation("TrackCategories");
+                });
+
+            modelBuilder.Entity("RestfulAPI.Repos.Models.Genre", b =>
+                {
+                    b.Navigation("TrackGenres");
                 });
 
             modelBuilder.Entity("RestfulAPI.Repos.Models.Label", b =>
@@ -972,6 +1078,12 @@ namespace RestfulAPI.Migrations
                     b.Navigation("PlaylistItems");
 
                     b.Navigation("StreamHistories");
+
+                    b.Navigation("TrackArtists");
+
+                    b.Navigation("TrackCategories");
+
+                    b.Navigation("TrackGenres");
 
                     b.Navigation("TrackLikes");
                 });

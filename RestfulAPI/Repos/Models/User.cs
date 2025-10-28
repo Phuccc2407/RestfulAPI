@@ -11,6 +11,7 @@ namespace RestfulAPI.Repos.Models
         public bool IsDeleted { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public string? AvatarUrl { get; set; }
 
         [InverseProperty("User")]
         public virtual ICollection<Artist> Artists { get; set; } = new List<Artist>();

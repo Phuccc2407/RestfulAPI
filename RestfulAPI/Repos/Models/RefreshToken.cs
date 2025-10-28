@@ -21,4 +21,6 @@ public partial class RefreshToken
     [Column("RefreshToken")]
     [Unicode(false)]
     public string? RefreshToken1 { get; set; }
+
+    public DateTime ExpiryDate { get; set; }
 }

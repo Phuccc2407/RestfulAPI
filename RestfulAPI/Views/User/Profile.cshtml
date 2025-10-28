@@ -1,0 +1,19 @@
+﻿@{
+    ViewData["Title"] = "Thông tin người dùng";
+    Layout = "_Layout";
+}
+@model RestfulAPI.Modal.UserModal
+
+<div class="user-detail">
+    <h1>@Model.UserName</h1>
+
+    <p><strong>ID người dùng:</strong> @Model.UserId</p>
+    <p><strong>Email:</strong> @Model.Email</p>
+</div>
+
+<form id="avatarForm" enctype="multipart/form-data" method="post" action="/user/upload-avatar">
+    <label for="avatarInput" class="form-label">Chọn ảnh đại diện mới:</label>
+    <input type="file" name="avatar" id="avatarInput" accept="image/*" class="form-control" required>
+    <button type="submit" class="btn btn-primary mt-2">Cập nhật ảnh</button>
+</form>
+

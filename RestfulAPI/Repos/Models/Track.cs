@@ -13,8 +13,6 @@ public partial class Track
 
     public string? AlbumId { get; set; }
 
-    public string ArtistId { get; set; }
-
     [StringLength(300)]
     public string Title { get; set; } = null!;
 
@@ -22,6 +20,9 @@ public partial class Track
 
     [StringLength(2000)]
     public string FileUrl { get; set; } = null!;
+
+    [StringLength(2000)]
+    public string TrackImageUrl { get; set; } = null!;
 
     public int? Bitrate { get; set; }
 
@@ -33,9 +34,10 @@ public partial class Track
     [InverseProperty("Tracks")]
     public virtual Album? Album { get; set; }
 
-    [ForeignKey("ArtistId")]
-    [InverseProperty("Tracks")]
-    public virtual Artist Artist { get; set; } = null!;
+    public virtual ICollection<TrackArtist> TrackArtists { get; set; } = new List<TrackArtist>();
+
+    public virtual ICollection<TrackGenre> TrackGenres { get; set; } = new List<TrackGenre>();
+    public virtual ICollection<TrackCategory> TrackCategories { get; set; } = new List<TrackCategory>();
 
     [InverseProperty("Track")]
     public virtual ICollection<PlaylistItem> PlaylistItems { get; set; } = new List<PlaylistItem>();
@@ -45,8 +47,4 @@ public partial class Track
 
     [InverseProperty("Track")]
     public virtual ICollection<TrackLike> TrackLikes { get; set; } = new List<TrackLike>();
-
-    [ForeignKey("TrackId")]
-    [InverseProperty("Tracks")]
-    public virtual ICollection<Genre> Genres { get; set; } = new List<Genre>();
 }

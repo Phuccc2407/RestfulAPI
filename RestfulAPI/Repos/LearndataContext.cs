@@ -24,6 +24,8 @@ public partial class LearndataContext : IdentityDbContext<User>
 
     public virtual DbSet<AuditLog> AuditLogs { get; set; }
 
+    public virtual DbSet<Category> Category { get; set; }
+
     public virtual DbSet<Follow> Follows { get; set; }
 
     public virtual DbSet<Genre> Genres { get; set; }
@@ -45,6 +47,16 @@ public partial class LearndataContext : IdentityDbContext<User>
     public virtual DbSet<Track> Tracks { get; set; }
 
     public virtual DbSet<TrackLike> TrackLikes { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer(
+            "Server=DESKTOP-ANVF8SQ\\SQLEXPRESS;Database=NhacNheoDB;Trusted_Connection=True;TrustServerCertificate=True;",
+            sqlOptions =>
+            {
+                sqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+            });
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -81,6 +93,11 @@ public partial class LearndataContext : IdentityDbContext<User>
             entity.Property(e => e.PerformedAt).HasDefaultValueSql("(sysutcdatetime())");
 
             entity.HasOne(d => d.PerformedByNavigation).WithMany(p => p.AuditLogs).HasConstraintName("FK__AuditLogs__Perfo__17036CC0");
+        });
+
+        modelBuilder.Entity<Category>(entity =>
+        {
+            entity.HasKey(e => e.CategoryId).HasName("PK__Genres__0385057E0B602F56");
         });
 
         modelBuilder.Entity<Follow>(entity =>
@@ -179,29 +196,66 @@ public partial class LearndataContext : IdentityDbContext<User>
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.Explicit).HasDefaultValue(false);
 
-            entity.HasOne(d => d.Album).WithMany(p => p.Tracks).HasConstraintName("FK__Tracks__AlbumId__6D0D32F4");
+            // Quan hệ Track -> Album (1-n)
+            entity.HasOne(d => d.Album)
+                .WithMany(p => p.Tracks)
+                .HasForeignKey(d => d.AlbumId)
+                .HasConstraintName("FK__Tracks__AlbumId__6D0D32F4");
 
-            entity.HasOne(d => d.Artist).WithMany(p => p.Tracks)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Tracks__ArtistId__6E01572D");
+            // Quan hệ Track <-> Artist nhiều-nhiều qua TrackArtist
+            modelBuilder.Entity<TrackArtist>(ta =>
+            {
+                ta.HasKey(x => new { x.TrackId, x.ArtistId });
 
-            entity.HasMany(d => d.Genres).WithMany(p => p.Tracks)
-                .UsingEntity<Dictionary<string, object>>(
-                    "TrackGenre",
-                    r => r.HasOne<Genre>().WithMany()
-                        .HasForeignKey("GenreId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__TrackGenr__Genre__71D1E811"),
-                    l => l.HasOne<Track>().WithMany()
-                        .HasForeignKey("TrackId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__TrackGenr__Track__70DDC3D8"),
-                    j =>
-                    {
-                        j.HasKey("TrackId", "GenreId").HasName("PK__TrackGen__8A4CA8B797FA578A");
-                        j.ToTable("TrackGenres");
-                    });
+                ta.HasOne(x => x.Track)
+                    .WithMany(t => t.TrackArtists)
+                    .HasForeignKey(x => x.TrackId)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
+
+                ta.HasOne(x => x.Artist)
+                    .WithMany(a => a.TrackArtists)
+                    .HasForeignKey(x => x.ArtistId)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
+
+                ta.ToTable("TrackArtists");
+            });
+
+            // Quan hệ Track <-> Genre nhiều-nhiều qua TrackGenre
+            modelBuilder.Entity<TrackGenre>(tg =>
+            {
+                tg.HasKey(x => new { x.TrackId, x.GenreId });
+
+                tg.HasOne(x => x.Track)
+                    .WithMany(t => t.TrackGenres)
+                    .HasForeignKey(x => x.TrackId)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
+
+                tg.HasOne(x => x.Genre)
+                    .WithMany(g => g.TrackGenres)
+                    .HasForeignKey(x => x.GenreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
+
+                tg.ToTable("TrackGenres");
+            });
+
+            modelBuilder.Entity<TrackCategory>(tg =>
+            {
+                tg.HasKey(x => new { x.TrackId, x.CategoryId });
+
+                tg.HasOne(x => x.Track)
+                    .WithMany(t => t.TrackCategories)
+                    .HasForeignKey(x => x.TrackId)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
+
+                tg.HasOne(x => x.Category)
+                    .WithMany(g => g.TrackCategories)
+                    .HasForeignKey(x => x.CategoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
+
+                tg.ToTable("TrackCategories");
+            });
         });
+
 
         modelBuilder.Entity<TrackLike>(entity =>
         {
